@@ -1,17 +1,13 @@
 import Phaser from "phaser";
 
 const config = {
-    // WebGL(Web graphics library) JS Api fro rendering 2D and 3D graphics
     type: Phaser.AUTO,
     width: 800,
     height: 600,
     physics: {
-        // Arcade physics plugin, manages physics simulation
         default: 'arcade',
         arcade: {
-            gravity: {
-                y: 200
-            }
+            debug: true
         }
     },
     scene: {
@@ -21,34 +17,30 @@ const config = {
     }
 }
 
+const VELOCITY = 200;
 let bird = null;
 let totalDelta = 0;
 let delta = 0;
 
 
-//Loading assets, such as images, music, animations...
 function preload() {
-    // 'this' context - scene
-    //containas functions and properties we can use
     this.load.image("sky", "./assets/sky.png");
     this.load.image("bird", "./assets/bird.png");
 }
 
 function create() {
-    //x, y, key
     this.add.image(0, 0, "sky").setOrigin(0, 0);
     bird = this.physics.add.sprite(config.width / 10, config.height / 2, "bird").setOrigin(0);
+    bird.body.velocity.x = VELOCITY;
 }
 
-//60 fps
 function update() {
-
-    if (totalDelta >= 1000) {
-        console.log(bird.body.velocity.y);
-        totalDelta = 0;
+    if(bird.x >= config.width) {
+        bird.body.gravity.x = -VELOCITY;
     }
-
-    totalDelta += delta;
+    else if(bird.x <= 0) {
+        bird.body.gravity.x = VELOCITY;
+    }
 }
 
 new Phaser.Game(config);
