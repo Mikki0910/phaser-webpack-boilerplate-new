@@ -57,6 +57,19 @@ function create() {
 }
 
 
+function recyclePipes() {
+    const tempPipes = [];
+    pipes.getChildren().forEach(pipe => {
+        if (pipe.getBounds().right <= 0) {
+            tempPipes.push(pipe);
+            if(tempPipes.length === 2)
+            {
+                placePipe(...tempPipes);
+            }
+        }
+    })
+}
+
 function flap() {
     debugger
     bird.body.velocity.y = -FLAP_VELOCITY;
@@ -80,16 +93,16 @@ function placePipe(uPipe, lPipe) {
 }
 
 
-
 function update() {
     if (bird.y > config.height || bird.y < -config.height) {
         restartPlayerPosition();
     }
+    recyclePipes();
 }
 
 function getRightMostPipe() {
     let rightMostX = 0;
-    pipes.getChildren().forEach(function(pipe){
+    pipes.getChildren().forEach(function (pipe) {
         rightMostX = Math.max(pipe.x, rightMostX);
     })
     return rightMostX;
