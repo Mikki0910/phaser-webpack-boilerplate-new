@@ -19,7 +19,10 @@ const config = {
 
 const FLAP_VELOCITY = 250;
 const initialBirdPosition = {x: config.width / 10, y: config.height / 2};
+
 const pipeVerticalDistanceRange = [150, 250];
+const pipeHorizontalDistanceRange = [300, 350];
+
 const PIPES_TO_RENDER = 4;
 let pipeHorizontalDistance = 0;
 let bird = null;
@@ -59,15 +62,15 @@ function flap() {
     bird.body.velocity.y = -FLAP_VELOCITY;
 }
 
-function placePipe(uPipe, lPipe)
-{
+function placePipe(uPipe, lPipe) {
     pipeHorizontalDistance += 400;
-    //pipeVerticalDistanceRange = getRightMostPipe();
+    const rightMostX = getRightMostPipe();
     let pipeVerticalDistance = Phaser.Math.Between(pipeVerticalDistanceRange[0], pipeVerticalDistanceRange[1]);
-    let pipeVerticalPosition = Phaser.Math.Between(0 + 20, config.height - 20 - pipeVerticalDistance);
+    let pipeVerticalPosition = Phaser.Math.Between(20, config.height - 20 - pipeVerticalDistance);
+    let thisPipeHorizontalDistance = Phaser.Math.Between(...pipeHorizontalDistanceRange); // renamed
 
-    uPipe.x = pipeHorizontalDistance;
-    uPipe.y = pipeVerticalDistance;
+    uPipe.x = rightMostX + thisPipeHorizontalDistance;
+    uPipe.y = pipeVerticalPosition;
 
     lPipe.x = uPipe.x;
     lPipe.y = uPipe.y + pipeVerticalDistance;
@@ -77,16 +80,21 @@ function placePipe(uPipe, lPipe)
 }
 
 
+
 function update() {
     if (bird.y > config.height || bird.y < -config.height) {
         restartPlayerPosition();
     }
 }
 
-function getRightMostPipe()
-{
-    
+function getRightMostPipe() {
+    let rightMostX = 0;
+    pipes.getChildren().forEach(function(pipe){
+        rightMostX = Math.max(pipe.x, rightMostX);
+    })
+    return rightMostX;
 }
+
 
 function restartPlayerPosition() {
     bird.x = initialBirdPosition.x;
